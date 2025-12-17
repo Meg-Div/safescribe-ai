@@ -16,31 +16,51 @@ function App() {
   const [rewrittenText, setRewrittenText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [analysis, setAnalysis] = useState(null);
 
   const handleAnalyze = async () => {
-    // Clear prior errors
     setError("");
 
-    // If there's no input, do nothing (or you could set an error)
     if (!inputText.trim()) {
       setError("Please paste some content before analyzing.");
       return;
     }
 
-    // Set loading state
     setIsLoading(true);
 
     try {
-      // Fake delay to simulate network call (800ms)
+      // Fake delay to simulate work
       await new Promise((resolve) => setTimeout(resolve, 800));
 
-      // For now, just copy input to originalText and a dummy rewrittenText
+      // For now, copy input to original and set a dummy rewritten version
       setOriginalText(inputText);
       setRewrittenText(
-        "This is where the safer, risk-aware version of your text will appear. (Dummy text for now.)"
+        "This is a safer, risk-aware version of your content. (Dummy text for now; will be replaced by model output.)"
       );
 
-      // Later this is where we'll set analysis results from the model.
+      // NEW: dummy analysis object to drive the right-hand panel
+      setAnalysis({
+        riskScore: 64,
+        claimConfidence: 72, // 0–100
+        issues: ["Science", "Financial", "Low evidence"],
+        rewordedPhrases: ["quantum leap", "guaranteed gains"],
+        summary:
+          "Softened claims about immediate financial gains and added scientific uncertainty.",
+        rewrittenBullets: [
+          {
+            label: "Financial",
+            text: "Language around returns is tempered, removing implied guarantees and immediate outcomes.",
+          },
+          {
+            label: "Science",
+            text: "Statements now include uncertainty and avoid overstating the strength of evidence.",
+          },
+          {
+            label: "Ethics",
+            text: "Removed deterministic claims about societal impact and added more careful nuance.",
+          },
+        ],
+      });
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
@@ -86,8 +106,8 @@ function App() {
 
             {/* Right column */}
             <div className="flex flex-col gap-4">
-              <RiskOverview />
-              <RewrittenSummary />
+              <RiskOverview analysis={analysis} />
+              <RewrittenSummary analysis={analysis} />
             </div>
           </div>
         </main>
